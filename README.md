@@ -1,12 +1,20 @@
-# Lixeira Inteligente ♻️
+# Lixeira Inteligente - Beta
 
-Projeto em Java utilizando arquitetura MVC.
+## Descrição
+Projeto acadêmico de uma lixeira inteligente desenvolvido em Java, seguindo arquitetura MVC.
+
+## Funcionalidades
+- Cadastro de materiais
+- Separação por categoria
+- Estrutura organizada em pacotes
+
+## Tecnologias
+- Java
+- Programação Orientada a Objetos
 
 ## Estrutura
-src/
-  model/
-  service/
-  view/
-
+- src → código fonte
+- docs → documentação
+  
 ## Como rodar
 Abra o projeto no VS Code e execute view/Main.java
