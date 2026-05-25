@@ -1,22 +1,11 @@
+# Lixeira Inteligente
 
-# Lixeira Inteligente - Beta
+Projeto desenvolvido em Java utilizando Programação Orientada a Objetos.
 
-## Descrição
-Projeto feito em Java para simular uma lixeira inteligente, utilizando conceitos de POO e arquitetura MVC.
+## Como Executar
 
-## Funcionalidades
-- Cadastro de materiais  
-- Separação por categorias  
-- Organização do sistema em MVC  
+Compile:
+javac model/*.java service/*.java view/*.java
 
-## Tecnologias e Conceitos Aplicados
-- Java  
-- Programação Orientada a Objetos (POO)  
-- Arquitetura MVC  
-
-## Estrutura do Projeto
-- src → código fonte  
-- docs → documentação
-  
-## Como rodar
-Abra o projeto no VS Code e execute view/Main.java
+Execute:
+java view.Main
