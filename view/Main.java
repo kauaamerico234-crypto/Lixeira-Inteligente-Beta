@@ -1,110 +1,197 @@
 package view;
 
-import model.Material;
-import service.MaterialService;
+import controller.MaterialController;
+import model.*;
 
-import java.util.InputMismatchException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
+// MVC:
+// Esta classe representa a VIEW.
+// Responsável pela interação com o usuário.
 public class Main {
+
+    // Login do administrador
+    private static final String ADMIN_ID = "adm";
+    private static final String SENHA = "12345";
 
     public static void main(String[] args) {
 
-        MaterialService service = new MaterialService();
-
         Scanner scanner = new Scanner(System.in);
+        MaterialController controller = new MaterialController();
 
         int opcao = -1;
 
         do {
 
-            System.out.println("\n========= LIXEIRA INTELIGENTE =========");
+            System.out.println("\n===== LIXEIRA INTELIGENTE =====");
             System.out.println("1 - Listar materiais");
             System.out.println("2 - Buscar material por nome");
             System.out.println("3 - Buscar por categoria");
             System.out.println("4 - Cadastrar material");
             System.out.println("5 - Remover material");
             System.out.println("0 - Sair");
-
             System.out.print("Escolha: ");
 
+            // try/catch para validação
             try {
-
-                opcao = scanner.nextInt();
-
-                scanner.nextLine();
+                opcao = Integer.parseInt(scanner.nextLine());
 
                 switch (opcao) {
 
                     case 1:
-                        service.listarMateriais();
+                        for (Material material : controller.listarMateriais()) {
+                            System.out.println(material);
+                            System.out.println("---------------------------");
+                        }
                         break;
 
                     case 2:
-
                         System.out.print("Digite o nome: ");
-
                         String nome = scanner.nextLine();
 
-                        Material material = service.buscarPorNome(nome);
+                        Material encontrado = controller.buscarPorNome(nome);
 
-                        if (material != null) {
-                            System.out.println(material);
+                        if (encontrado != null) {
+                            System.out.println(encontrado);
                         } else {
                             System.out.println("Material não encontrado.");
                         }
-
                         break;
 
                     case 3:
 
-                        System.out.print("Digite a categoria: ");
+                        System.out.println("1-PLASTICO");
+                        System.out.println("2-METAL");
+                        System.out.println("3-PAPEL");
+                        System.out.println("4-VIDRO");
+                        System.out.println("5-ORGANICO");
 
-                        String categoria = scanner.nextLine();
+                        int cat = Integer.parseInt(scanner.nextLine());
 
-                        service.buscarPorCategoria(categoria);
+                        Categoria categoria = null;
+
+                        switch (cat) {
+                            case 1:
+                                categoria = Categoria.PLASTICO;
+                                break;
+                            case 2:
+                                categoria = Categoria.METAL;
+                                break;
+                            case 3:
+                                categoria = Categoria.PAPEL;
+                                break;
+                            case 4:
+                                categoria = Categoria.VIDRO;
+                                break;
+                            case 5:
+                                categoria = Categoria.ORGANICO;
+                                break;
+                            default:
+                                System.out.println("Categoria inválida.");
+                        }
+
+                        if (categoria != null) {
+
+                            ArrayList<Material> lista =
+                                    controller.buscarPorCategoria(categoria);
+
+                            for (Material material : lista) {
+                                System.out.println(material);
+                                System.out.println("---------------------------");
+                            }
+                        }
 
                         break;
 
                     case 4:
 
-                        System.out.print("ID: ");
-                        int id = scanner.nextInt();
+                        if (autenticar(scanner)) {
 
-                        scanner.nextLine();
+                            System.out.print("ID: ");
+                            int id = Integer.parseInt(scanner.nextLine());
 
-                        System.out.print("Nome: ");
-                        String n = scanner.nextLine();
+                            System.out.print("Nome: ");
+                            String novoNome = scanner.nextLine();
 
-                        System.out.print("Categoria: ");
-                        String c = scanner.nextLine();
+                            System.out.println("1-PLASTICO");
+                            System.out.println("2-METAL");
+                            System.out.println("3-PAPEL");
+                            System.out.println("4-VIDRO");
+                            System.out.println("5-ORGANICO");
 
-                        System.out.print("Tempo de decomposição: ");
-                        String t = scanner.nextLine();
+                            int categoriaOpcao =
+                                    Integer.parseInt(scanner.nextLine());
 
-                        System.out.print("Dicas: ");
-                        String d = scanner.nextLine();
+                            Categoria novaCategoria = Categoria.PLASTICO;
 
-                        Material novo = new Material(id, n, c, t, d);
+                            switch (categoriaOpcao) {
+                                case 1:
+                                    novaCategoria = Categoria.PLASTICO;
+                                    break;
+                                case 2:
+                                    novaCategoria = Categoria.METAL;
+                                    break;
+                                case 3:
+                                    novaCategoria = Categoria.PAPEL;
+                                    break;
+                                case 4:
+                                    novaCategoria = Categoria.VIDRO;
+                                    break;
+                                case 5:
+                                    novaCategoria = Categoria.ORGANICO;
+                                    break;
+                            }
 
-                        service.adicionarMaterial(novo);
+                            System.out.print("Tempo de decomposição: ");
+                            String tempo = scanner.nextLine();
 
-                        System.out.println("Material cadastrado com sucesso!");
+                            System.out.print("Dicas: ");
+                            String dicas = scanner.nextLine();
+
+                            Material material;
+
+                            if (novaCategoria == Categoria.ORGANICO) {
+
+                                material = new MaterialOrganico(
+                                        id,
+                                        novoNome,
+                                        novaCategoria,
+                                        tempo,
+                                        dicas
+                                );
+
+                            } else {
+
+                                material = new MaterialReciclavel(
+                                        id,
+                                        novoNome,
+                                        novaCategoria,
+                                        tempo,
+                                        dicas
+                                );
+                            }
+
+                            controller.adicionarMaterial(material);
+
+                            System.out.println("Material cadastrado com sucesso!");
+                        }
 
                         break;
 
                     case 5:
 
-                        System.out.print("Digite o nome do material: ");
+                        if (autenticar(scanner)) {
 
-                        String remover = scanner.nextLine();
+                            System.out.print("Digite o ID do material: ");
+                            int idRemover =
+                                    Integer.parseInt(scanner.nextLine());
 
-                        boolean removido = service.removerMaterial(remover);
-
-                        if (removido) {
-                            System.out.println("Material removido.");
-                        } else {
-                            System.out.println("Material não encontrado.");
+                            if (controller.removerMaterial(idRemover)) {
+                                System.out.println("Material removido.");
+                            } else {
+                                System.out.println("Material não encontrado.");
+                            }
                         }
 
                         break;
@@ -117,15 +204,32 @@ public class Main {
                         System.out.println("Opção inválida.");
                 }
 
-            } catch (InputMismatchException e) {
+            } catch (Exception e) {
 
-                System.out.println("Digite apenas números.");
-
-                scanner.nextLine();
+                // Tratamento de erros usando try/catch
+                System.out.println("Erro: entrada inválida.");
             }
 
         } while (opcao != 0);
 
         scanner.close();
+    }
+
+    // Método de autenticação do administrador
+    private static boolean autenticar(Scanner scanner) {
+
+        System.out.print("ID de administrador: ");
+        String id = scanner.nextLine();
+
+        System.out.print("Senha: ");
+        String senha = scanner.nextLine();
+
+        if (id.equals(ADMIN_ID) && senha.equals(SENHA)) {
+            System.out.println("Acesso autorizado!");
+            return true;
+        }
+
+        System.out.println("Acesso negado!");
+        return false;
     }
 }

@@ -1,16 +1,32 @@
 package model;
 
-// Classe principal do sistema
+// Classe base do sistema
+// ENCAPSULAMENTO:
+// Os atributos são private e acessados por getters/setters
 public class Material {
 
     private int id;
     private String nome;
-    private String categoria;
+    private Categoria categoria;
     private String tempoDecomposicao;
     private String dicas;
 
-    // Construtor principal
-    public Material(int id, String nome, String categoria,
+    // SOBRECARGA:
+    // Construtor vazio
+    public Material() {
+    }
+
+    // SOBRECARGA:
+    // Construtor com parâmetros
+    public Material(int id, String nome, Categoria categoria) {
+        this.id = id;
+        this.nome = nome;
+        this.categoria = categoria;
+    }
+
+    // SOBRECARGA:
+    // Construtor completo
+    public Material(int id, String nome, Categoria categoria,
                     String tempoDecomposicao, String dicas) {
 
         this.id = id;
@@ -20,21 +36,12 @@ public class Material {
         this.dicas = dicas;
     }
 
-    // SOBRECARGA DE CONSTRUTOR
-    public Material(String nome, String categoria) {
-        this.nome = nome;
-        this.categoria = categoria;
-    }
-
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
-
-        if (id > 0) {
-            this.id = id;
-        }
+        this.id = id;
     }
 
     public String getNome() {
@@ -42,17 +49,14 @@ public class Material {
     }
 
     public void setNome(String nome) {
-
-        if (!nome.isEmpty()) {
-            this.nome = nome;
-        }
+        this.nome = nome;
     }
 
-    public String getCategoria() {
+    public Categoria getCategoria() {
         return categoria;
     }
 
-    public void setCategoria(String categoria) {
+    public void setCategoria(Categoria categoria) {
         this.categoria = categoria;
     }
 
@@ -74,12 +78,10 @@ public class Material {
 
     @Override
     public String toString() {
-
-        return "\nID: " + id +
+        return "ID: " + id +
                 "\nNome: " + nome +
                 "\nCategoria: " + categoria +
                 "\nTempo de decomposição: " + tempoDecomposicao +
-                "\nDicas: " + dicas +
-                "\n--------------------------------";
+                "\nDicas: " + dicas;
     }
 }

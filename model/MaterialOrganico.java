@@ -1,36 +1,19 @@
 package model;
 
+// HERANÇA:
+// MaterialOrganico herda atributos e métodos da classe Material
 public class MaterialOrganico extends Material {
 
-    private boolean compostavel;
-
-    public MaterialOrganico(int id,
-                            String nome,
-                            String categoria,
-                            String tempoDecomposicao,
-                            String dicas,
-                            boolean compostavel) {
+    public MaterialOrganico(int id, String nome, Categoria categoria,
+                            String tempoDecomposicao, String dicas) {
 
         super(id, nome, categoria, tempoDecomposicao, dicas);
-
-        this.compostavel = compostavel;
     }
 
-    public boolean isCompostavel() {
-        return compostavel;
-    }
-
-    public void setCompostavel(boolean compostavel) {
-        this.compostavel = compostavel;
-    }
-
+    // POLIMORFISMO:
+    // Override do método toString()
     @Override
     public String toString() {
-
-        String status = compostavel ? "Sim" : "Não";
-
-        return super.toString() +
-                "\nCompostável: " + status +
-                "\n================================";
+        return "\n===== MATERIAL ORGÂNICO =====\n" + super.toString();
     }
 }
