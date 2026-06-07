@@ -1,31 +1,41 @@
-# Lixeira Inteligente - MVC
+# LixeiraInteligente — MVC
 
 Projeto acadêmico em Java utilizando arquitetura MVC.
 
 ## Funcionalidades
 
-- CRUD de materiais
-- Busca por nome
-- Busca por categoria
-- Login de administrador
-- Cadastro automático de 50 materiais
-- Herança
-- Polimorfismo
-- Sobrecarga
-- Encapsulamento
-- ArrayList
-- try/catch
+- Listagem de todos os materiais (60 pré-cadastrados)
+- Busca por nome exato (case-insensitive)
+- Busca por categoria (Plástico, Metal, Papel, Vidro, Orgânico, Rejeito)
+- Busca por palavra-chave parcial (overload)
+- CRUD completo com autenticação de administrador
+  - Cadastrar novo material
+  - Editar material existente
+  - Remover material
+
+## Conceitos POO aplicados
+
+- Encapsulamento (atributos private + getters/setters)
+- Herança (MaterialReciclavel, MaterialOrganico, MaterialRejeito → Material)
+- Polimorfismo — sobrescrita toString() em cada subclasse
+- Sobrecarga — 3 construtores em Material; 2 métodos buscarPorNome em MaterialService
+- ArrayList para armazenamento dinâmico
+- Iterator para remoção segura (evita ConcurrentModificationException)
+- try/catch para validação de entradas
 
 ## Estrutura MVC
 
-- model -> classes de dados
-- controller -> regras de negócio
-- view -> interface/menu
+```
+src/
+├── model/      → classes de dados (Material, subclasses, Categoria)
+├── service/    → regras de negócio e CRUD (MaterialService)
+└── view/       → interface/menu (Main)
+```
 
 ## Compilar
 
 ```bash
-javac model/*.java controller/*.java view/*.java
+javac model/*.java service/*.java view/*.java
 ```
 
 ## Executar
@@ -33,3 +43,8 @@ javac model/*.java controller/*.java view/*.java
 ```bash
 java view.Main
 ```
+
+## Credenciais de administrador
+
+- ID: adm
+- Senha: 12345

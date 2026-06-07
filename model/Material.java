@@ -17,7 +17,7 @@ public class Material {
     }
 
     // SOBRECARGA:
-    // Construtor com parâmetros
+    // Construtor com parâmetros básicos
     public Material(int id, String nome, Categoria categoria) {
         this.id = id;
         this.nome = nome;
@@ -28,13 +28,14 @@ public class Material {
     // Construtor completo
     public Material(int id, String nome, Categoria categoria,
                     String tempoDecomposicao, String dicas) {
-
         this.id = id;
         this.nome = nome;
         this.categoria = categoria;
         this.tempoDecomposicao = tempoDecomposicao;
         this.dicas = dicas;
     }
+
+    // GETTERS E SETTERS (Encapsulamento)
 
     public int getId() {
         return id;
@@ -76,6 +77,7 @@ public class Material {
         this.dicas = dicas;
     }
 
+    // POLIMORFISMO (sobrescrito nas subclasses):
     @Override
     public String toString() {
         return "ID: " + id +

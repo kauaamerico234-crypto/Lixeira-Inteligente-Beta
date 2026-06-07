@@ -1,100 +1,193 @@
 package service;
 
-import model.Material;
-import model.MaterialOrganico;
-import model.MaterialReciclavel;
-
 import java.util.ArrayList;
+import java.util.Iterator;
+import model.*;
 
+// MVC:
+// Esta classe representa o SERVICE do sistema.
+// Toda regra de negócio e operações CRUD ficam aqui.
 public class MaterialService {
 
-    private ArrayList<Material> materiais;
+    // ArrayList utilizado para armazenar os materiais em memória
+    private ArrayList<Material> materiais = new ArrayList<>();
+
+    // Contador automático de IDs para novos materiais cadastrados
+    private int proximoId = 61;
 
     public MaterialService() {
-
-        materiais = new ArrayList<>();
-
-        carregarMateriaisIniciais();
+        carregarMateriaisAutomaticos();
     }
 
-    private void carregarMateriaisIniciais() {
+    // ==================== CRUD ====================
 
-        materiais.add(new MaterialReciclavel(1, "Garrafa PET", "Plástico", "400 anos", "Lavar antes de reciclar", "Vermelha"));
-        materiais.add(new MaterialReciclavel(2, "Sacola Plástica", "Plástico", "100 anos", "Evitar descarte irregular", "Vermelha"));
-        materiais.add(new MaterialReciclavel(3, "Copo Descartável", "Plástico", "250 anos", "Separar limpo", "Vermelha"));
-        materiais.add(new MaterialReciclavel(4, "Pote de Margarina", "Plástico", "200 anos", "Lavar antes do descarte", "Vermelha"));
-        materiais.add(new MaterialReciclavel(5, "Tampa Plástica", "Plástico", "150 anos", "Separar por tipo", "Vermelha"));
-
-        materiais.add(new MaterialReciclavel(11, "Lata de Alumínio", "Metal", "200 anos", "Amassar antes de descartar", "Amarela"));
-        materiais.add(new MaterialReciclavel(12, "Tampa Metálica", "Metal", "100 anos", "Separar corretamente", "Amarela"));
-
-        materiais.add(new MaterialReciclavel(21, "Jornal", "Papel", "6 meses", "Manter seco", "Azul"));
-        materiais.add(new MaterialReciclavel(22, "Revista", "Papel", "6 meses", "Evitar molhar", "Azul"));
-
-        materiais.add(new MaterialReciclavel(31, "Garrafa de Vidro", "Vidro", "1000 anos", "Descartar com cuidado", "Verde"));
-        materiais.add(new MaterialReciclavel(32, "Pote de Vidro", "Vidro", "1000 anos", "Lavar antes do descarte", "Verde"));
-
-        materiais.add(new MaterialOrganico(41, "Casca de Banana", "Orgânico", "2 meses", "Pode compostar", true));
-        materiais.add(new MaterialOrganico(42, "Restos de Comida", "Orgânico", "1 mês", "Separar dos recicláveis", true));
-    }
-
+    // CRUD - CREATE: adiciona um novo material à lista
     public void adicionarMaterial(Material material) {
         materiais.add(material);
     }
 
-    public void listarMateriais() {
-
-        if (materiais.isEmpty()) {
-            System.out.println("Nenhum material cadastrado.");
-            return;
-        }
-
-        for (Material m : materiais) {
-            System.out.println(m);
-        }
+    // Retorna o próximo ID disponível (para uso na view)
+    public int getProximoId() {
+        return proximoId++;
     }
 
-    public Material buscarPorNome(String nome) {
+    // CRUD - READ: retorna todos os materiais cadastrados
+    public ArrayList<Material> listarMateriais() {
+        return materiais;
+    }
 
-        for (Material m : materiais) {
-
-            if (m.getNome().equalsIgnoreCase(nome)) {
-                return m;
+    // CRUD - UPDATE: atualiza nome, tempo e dicas de um material pelo ID
+    public boolean atualizarMaterial(int id, String novoNome,
+                                     String novoTempo, String novasDicas) {
+        for (Material material : materiais) {
+            if (material.getId() == id) {
+                material.setNome(novoNome);
+                material.setTempoDecomposicao(novoTempo);
+                material.setDicas(novasDicas);
+                return true;
             }
         }
+        return false;
+    }
 
+    // CRUD - DELETE: remove material pelo ID
+    // CORREÇÃO: uso de Iterator para evitar ConcurrentModificationException
+    public boolean removerMaterial(int id) {
+        Iterator<Material> iterator = materiais.iterator();
+        while (iterator.hasNext()) {
+            Material material = iterator.next();
+            if (material.getId() == id) {
+                iterator.remove();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // ==================== BUSCAS ====================
+
+    // Busca por nome exato (case-insensitive)
+    public Material buscarPorNome(String nome) {
+        for (Material material : materiais) {
+            if (material.getNome().equalsIgnoreCase(nome)) {
+                return material;
+            }
+        }
         return null;
     }
 
-    public void buscarPorCategoria(String categoria) {
-
-        boolean encontrado = false;
-
-        for (Material m : materiais) {
-
-            if (m.getCategoria().equalsIgnoreCase(categoria)) {
-
-                System.out.println(m);
-                encontrado = true;
+    // SOBRECARGA: busca por palavra-chave parcial (contém trecho do nome)
+    public ArrayList<Material> buscarPorNome(String palavraChave, boolean parcial) {
+        ArrayList<Material> encontrados = new ArrayList<>();
+        for (Material material : materiais) {
+            if (material.getNome().toLowerCase()
+                    .contains(palavraChave.toLowerCase())) {
+                encontrados.add(material);
             }
         }
-
-        if (!encontrado) {
-            System.out.println("Nenhum material encontrado.");
-        }
+        return encontrados;
     }
 
-    public boolean removerMaterial(String nome) {
+    // Busca por categoria específica
+    public ArrayList<Material> buscarPorCategoria(Categoria categoria) {
+        ArrayList<Material> encontrados = new ArrayList<>();
+        for (Material material : materiais) {
+            if (material.getCategoria() == categoria) {
+                encontrados.add(material);
+            }
+        }
+        return encontrados;
+    }
 
-        Material material = buscarPorNome(nome);
+    // ==================== CARGA INICIAL ====================
 
-        if (material != null) {
+    // Cadastro automático de 60 materiais pré-cadastrados
+    private void carregarMateriaisAutomaticos() {
 
-            materiais.remove(material);
+        String[] plasticos = {
+            "Garrafa PET", "Sacola Plástica", "Pote de Shampoo", "Copo Descartável",
+            "Canudo", "Tampa Plástica", "Embalagem de Detergente", "Brinquedo Plástico",
+            "Pote de Margarina", "Escova de Dente"
+        };
 
-            return true;
+        String[] metais = {
+            "Lata de Alumínio", "Panela Velha", "Pregos", "Fios de Cobre",
+            "Tampa Metálica", "Ferramenta Antiga", "Clipes", "Parafusos",
+            "Chapa de Ferro", "Lata de Tinta"
+        };
+
+        String[] papeis = {
+            "Jornal", "Revista", "Caixa de Papelão", "Folha Sulfite",
+            "Caderno", "Envelope", "Papel Kraft", "Cartolina",
+            "Panfleto", "Livro Velho"
+        };
+
+        String[] vidros = {
+            "Garrafa de Vidro", "Pote de Conserva", "Copo de Vidro", "Janela Quebrada",
+            "Frasco de Perfume", "Vidro Temperado", "Taça", "Lâmpada",
+            "Espelho", "Pote de Geleia"
+        };
+
+        String[] organicos = {
+            "Casca de Banana", "Restos de Comida", "Folhas Secas", "Borra de Café",
+            "Casca de Ovo", "Frutas Estragadas", "Verduras", "Grama Cortada",
+            "Sementes", "Pão Velho"
+        };
+
+        String[] rejeitos = {
+            "Esponja de Cozinha", "Fralda Descartável", "Papel Higiênico Usado",
+            "Embalagem de Pizza com Gordura", "Isopor Sujo", "Absorvente",
+            "Fio Dental", "Cotonete", "Cigarro", "Espelho Quebrado"
+        };
+
+        int id = 1;
+
+        for (String item : plasticos) {
+            adicionarMaterial(new MaterialReciclavel(
+                id++, item, Categoria.PLASTICO,
+                "100 a 450 anos",
+                "Descartar em coleta seletiva de plástico."
+            ));
         }
 
-        return false;
+        for (String item : metais) {
+            adicionarMaterial(new MaterialReciclavel(
+                id++, item, Categoria.METAL,
+                "50 a 500 anos",
+                "Separar para reciclagem metálica."
+            ));
+        }
+
+        for (String item : papeis) {
+            adicionarMaterial(new MaterialReciclavel(
+                id++, item, Categoria.PAPEL,
+                "3 a 6 meses",
+                "Manter seco para reciclagem."
+            ));
+        }
+
+        for (String item : vidros) {
+            adicionarMaterial(new MaterialReciclavel(
+                id++, item, Categoria.VIDRO,
+                "Mais de 4000 anos",
+                "Levar para ponto de coleta de vidro."
+            ));
+        }
+
+        for (String item : organicos) {
+            adicionarMaterial(new MaterialOrganico(
+                id++, item, Categoria.ORGANICO,
+                "2 semanas a 6 meses",
+                "Ideal para compostagem doméstica."
+            ));
+        }
+
+        for (String item : rejeitos) {
+            adicionarMaterial(new MaterialRejeito(
+                id++, item, Categoria.REJEITO,
+                "Variável (décadas a séculos)",
+                "Descarte no lixo comum (saco preto)."
+            ));
+        }
     }
 }

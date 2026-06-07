@@ -6,5 +6,6 @@ public enum Categoria {
     METAL,
     PAPEL,
     VIDRO,
-    ORGANICO
+    ORGANICO,
+    REJEITO  // Adicionado: materiais que não podem ser reciclados nem compostados
 }
